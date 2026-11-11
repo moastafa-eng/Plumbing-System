@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@await Component.InvokeAsync("About")
+@await Component.InvokeAsync("Service")
+@await Component.InvokeAsync("Portfolio")
+@await Component.InvokeAsync("Testimonial")
+<section id="cta" class="cta">
+    <div class="container">
+
+        <div class="text-center">
+            <h3>Contact Us!</h3>
+            <p>Leaky pipes or legal gripes? Our plumbing experts handle every job with no half measures. Don't hesitate to reach out today.</p>
+            <a class="cta-btn" href="#contact">GET A CONSULTATION</a>
+        </div>
+
+    </div>
+</section>
+@await Component.InvokeAsync("Team")
+@await Component.InvokeAsync("Contact")
