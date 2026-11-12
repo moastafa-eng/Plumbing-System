@@ -6,12 +6,13 @@
   A scalable, database-driven business website with a powerful administration dashboard, custom authentication, and role-based access control.
 </p>
 
+
 <p align="center">
-  ![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)
-  ![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4?logo=dotnet)
-  ![SQL Server](https://img.shields.io/badge/Database-SQL%20Server-CC2927?logo=microsoftsqlserver)
-  ![EF Core](https://img.shields.io/badge/ORM-Entity%20Framework%20Core-512BD4)
-  ![Architecture](https://img.shields.io/badge/Architecture-N--Tier-blue)
+  <img src="https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet" alt=".NET 8" />
+  <img src="https://img.shields.io/badge/ASP.NET_Core-MVC-512BD4?logo=dotnet" alt="ASP.NET Core MVC" />
+  <img src="https://img.shields.io/badge/SQL_Server-Database-CC2927?logo=microsoftsqlserver" alt="SQL Server" />
+  <img src="https://img.shields.io/badge/Entity_Framework_Core-ORM-512BD4" alt="Entity Framework Core" />
+  <img src="https://img.shields.io/badge/Architecture-N--Tier-blue" alt="N-Tier Architecture" />
 </p>
 
 ---
