@@ -1,233 +1,482 @@
-# 🚰 Plumbers911
+# 🚰 Plumbers911 – Dynamic Plumbing Business CMS
 
-**Plumbers911** is a professional, enterprise-grade Content Management System (CMS) built with **ASP.NET Core MVC** 💎. It features a robust **N-Tier Architecture** 🧱, **NLog** for structured logging 📝, and a fully dynamic database-driven frontend 🌐.
+### A Dynamic Content Management System Built with ASP.NET Core 8 MVC
+
+<p align="center">
+  A scalable, database-driven business website with a powerful administration dashboard, custom authentication, and role-based access control.
+</p>
+
+<p align="center">
+  ![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)
+  ![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4?logo=dotnet)
+  ![SQL Server](https://img.shields.io/badge/Database-SQL%20Server-CC2927?logo=microsoftsqlserver)
+  ![EF Core](https://img.shields.io/badge/ORM-Entity%20Framework%20Core-512BD4)
+  ![Architecture](https://img.shields.io/badge/Architecture-N--Tier-blue)
+</p>
 
 ---
 
-## 📋 Table of Contents
+## 📌 Overview
 
-* [✨ Key Features](https://www.google.com/search?q=%23-key-features)
-* [📖 Project Overview](https://www.google.com/search?q=%23-project-overview)
-* [🏗️ Architecture Overview](https://www.google.com/search?q=%23%25EF%25B8%258F-architecture-overview)
-* [🛡️ Security & Concurrency](https://www.google.com/search?q=%23%25EF%25B8%258F-security--concurrency)
-* [🛠️ Technologies & Tools](https://www.google.com/search?q=%23%25EF%25B8%258F-technologies--tools)
-* [📂 Project Structure](https://www.google.com/search?q=%23-project-structure)
-* [📝 Logging & Validation](https://www.google.com/search?q=%23-logging--validation)
-* [⚙️ Getting Started](https://www.google.com/search?q=%23%25EF%25B8%258F-getting-started)
-* [📜 License](https://www.google.com/search?q=%23-license)
+**Plumbers911** is a dynamic Content Management System (CMS) developed using ASP.NET Core 8 MVC.
+
+The project provides a complete solution for managing a plumbing business website through a database-driven architecture and an administration dashboard.
+
+Instead of relying on hardcoded website content, the application allows authorized administrators to dynamically manage website sections, including services, portfolio projects, team members, testimonials, categories, and other business information.
+
+The system also implements a customized authentication and authorization workflow using ASP.NET Core Identity, including hierarchical administrative permissions, temporary administrative access, account security, and concurrency control.
+
+Although initially designed for a plumbing business, its modular CMS architecture makes it adaptable to other business websites.
 
 ---
 
 ## ✨ Key Features
 
-* **🌐 Fully Dynamic CMS:** Every section (About Us, Services, Portfolio, Team) is database-driven and editable via the Admin Dashboard.
-* **👥 Dynamic Role Management:** Admins can grant limited access to users via a UI-based "Extend" feature.
-* **📝 Advanced Logging:** Integrated **NLog** for high-performance, structured error reporting and file-based logging.
-* **🧱 N-Tier Architecture:** Strict separation of concerns ensuring scalability, maintainability, and clean code principles.
-* **🔄 Repository Pattern:** Implements Generic Repository and **Unit of Work** patterns to ensure data consistency.
-* **✅ Robust Validation:** Server-side validation using **FluentValidation**.
-* **🔔 Interactive UI:** Real-time user feedback using **NToastNotify**.
+### 🌐 Dynamic Content Management System
+
+Manage website content dynamically through the Admin Dashboard.
+
+- Manage About Us information.
+- Manage website homepage content.
+- Create, update, and delete services.
+- Manage portfolio projects and categories.
+- Manage team members.
+- Manage customer testimonials.
+- Manage contact information.
+- Manage social media links.
+
+All major website sections are backed by database entities and rendered dynamically using ASP.NET Core MVC View Components.
+
+### 🔐 Authentication & Account Management
+
+Built on ASP.NET Core Identity with customized authentication workflows.
+
+- User registration and login.
+- Secure password hashing through ASP.NET Core Identity.
+- Custom password and username validation.
+- Email-based password recovery.
+- Password reset using Identity tokens.
+- Remember Me functionality.
+- Account lockout after repeated failed login attempts.
+- User profile management.
+- Profile picture upload.
+- Custom authentication error messages.
+
+### 🛡️ Advanced Authorization & Role Management
+
+The application implements a hierarchical authorization model.
+
+**SuperAdmin**
+- Access to administrative functionality.
+- Manage users and administrative permissions.
+- Grant temporary administrative access.
+- Perform protected management operations.
+
+**AdminObserver**
+- Access the administrative dashboard.
+- View and manage website content.
+- Update existing content.
+- Create new content.
+- Cannot delete protected content.
+- Cannot grant administrative permissions.
+
+**Member**
+- Access standard user functionality.
+- Manage personal account information.
+
+#### Temporary Administrative Access
+
+The system implements a custom `AdminObserver` authorization policy using claims.
+
+- SuperAdmins can extend a user's administrative access.
+- Temporary administrative claims have an expiration date.
+- The current implementation grants a five-day extension.
+- Authorization checks the validity of the claim.
+- Expired access is denied unless the database contains a newer valid expiration date.
+
+This approach provides more granular administrative permissions than relying exclusively on static roles.
+
+### ⚔️ Security & Concurrency
+
+**Security Stamp Validation**
+
+A custom middleware checks the authenticated user's security stamp against the database.
+
+When a user's security stamp changes, the existing authentication cookie is invalidated and the user is redirected to the login page.
+
+**Optimistic Concurrency Control**
+
+Entities inherit from a shared `BaseEntity` containing a `RowVersion` property.
+
+Entity Framework Core uses concurrency tracking to detect conflicting updates.
+
+If multiple administrators attempt to modify the same record, conflicting changes can be detected instead of silently overwriting previously saved data.
+
+### 🖼️ Image Management
+
+A centralized image helper manages uploaded website images.
+
+- Upload images for different content sections.
+- Organize files into dedicated directories.
+- Support JPG, JPEG, and PNG extensions.
+- Delete previously stored images.
+- Store image paths and content types in database entities.
+
+### ✅ Validation & User Feedback
+
+- FluentValidation for application input validation.
+- Separate validation classes for individual features.
+- Custom MVC filters.
+- Generic not-found handling.
+- Prevention of duplicate records for single-instance content sections.
+- NToastNotify for interactive user notifications.
+
+### 📝 Logging & Monitoring
+
+NLog is integrated into the application for runtime logging and error diagnostics.
+
+A centralized logging configuration is provided through `nlog.config`.
 
 ---
 
-## 📖 Project Overview
+## 🏗️ Architecture
 
-While **Plumbers911** is demonstrated as a Plumbing Service platform, it is engineered as a **Universal Business CMS**. 🌍
+The application follows a layered N-Tier Architecture with separation of concerns.
 
-The application is fully dynamic—meaning no content is hardcoded in the HTML. From the service icons to the team member bios, everything is managed via the database. This architecture allows you to apply this exact codebase to **any other business** (e.g., a Law Firm or Consulting Agency) simply by updating the content in the Admin Panel. 🎨
-
----
-
-## 🏗️ Architecture Overview
-
-The system is built using a professional **N-Tier Architecture**, separating the application into distinct logical layers. 🎯
-
-1. **Core Layer (Domain) 🌳**
-The root of the dependency chain. Contains base contracts (`IBaseEntity`) ensuring no circular dependencies.
-2. **Entity Layer (Data Domain) 💾**
-Houses database entities (`Service`, `Team`) and ViewModels (DTOs).
-3. **Repository Layer (Persistence) 🗄️**
-Handles Data Access Logic (DAL) using **Entity Framework Core** and the **Unit of Work** pattern.
-4. **Service Layer (Business Logic) ⚙️**
-The heart of the application. It orchestrates data flow, manages complex business rules, and strictly separates concerns.
-#### 🧩 Identity Customizations
-
-
-The project overrides default ASP.NET Core Identity behaviors to provide a tailored user experience:
-* **`CustomIdentityErrorDescriber`**: Replaces standard English error messages (e.g., "Password requires a digit") with custom, user-friendly messages suitable for the target audience.
-* **`CustomPasswordValidator` & `CustomUserValidator**`: Implements specific logic for password complexity and username rules beyond the framework's defaults.
-
-
-#### 🛡️ Filters & Validation
-
-
-* **Action Filters (`ValidationFilterAttribute`)**: A smart custom filter that ensures data integrity and Singleton logic.
-* **Singleton Page Protection:** Prevents duplicate content for single-instance pages like **About Us**, **Contact**, or **Home**.
-* **Logic:** If a record already exists for these sections, the "Add" button is hidden in the UI. Crucially, if a user attempts to bypass the UI by manually typing the URL (e.g., `/About/Add`), the filter intercepts the request and **redirects them back to the list**, preventing duplicate entries.
-* **Model Validation:** Automatically checks `ModelState.IsValid` before controller actions execute.
-
-
-* **FluentValidation**: All validation logic is decoupled from ViewModels. Instead of cluttering classes with `[Required]` attributes, rules are defined in separate validator classes (e.g., `TeamValidator`), ensuring separation of concerns and testability.
-
-
-#### 🛠️ Helpers & Utilities
-
-
-* **`EmailHelper`**: Encapsulates logic for sending "Forgot Password" and system notification emails via SMTP.
-* **`ImageHelper`**: Manages secure file uploads, image resizing, and deletion of old files when records are updated.
-* **`NotificationMessages`**: A static central repository for all system feedback strings (e.g., "Saved Successfully", "Error Occurred"). This eliminates "magic strings" and makes localization easy.
-
-
-**Detailed Structure:**
 ```text
-ServiceLayer/
-├── 📂 Services/
-│   ├── 📄 AboutService.cs                # Manages 'About Us' content
-│   ├── 📄 AuthenticationUserListService.cs # Handles User List & Role Extension
-│   ├── 📄 DashBoardService.cs            # Aggregates Admin Dashboard stats
-│   ├── 📄 PortfolioService.cs            # Manages Project Portfolio & Images
-│   ├── 📄 ServiceService.cs              # Manages Service Offerings
-│   ├── 📄 TeamService.cs                 # Manages Team Members & Social Links
-│   └── 📄 TestimonialService.cs          # Manages Client Reviews
-├── 📂 AutoMapper/
-│   ├── 📄 AboutMapper.cs
-│   ├── 📄 PortfolioMapper.cs
-│   ├── 📄 ServiceMapper.cs
-│   ├── 📄 TeamMapper.cs
-│   └── 📄 TestimonialMapper.cs
-├── 📂 FluentValidation/
-│   ├── 📄 AboutValidator.cs
-│   ├── 📄 PortfolioValidator.cs
-│   ├── 📄 ServiceValidator.cs
-│   ├── 📄 TeamValidator.cs
-│   └── 📄 TestimonialValidator.cs
-├── 📂 Helpers/
-│   ├── 📄 EmailHelper.cs                 # Email sending logic (SMTP)
-│   └── 📄 ImageHelper.cs                 # File upload & deletion logic
-├── 📂 IdentityCustomizations/
-│   ├── 📄 CustomIdentityErrorDescriber.cs # Overridden Identity error messages
-│   ├── 📄 CustomPasswordValidator.cs      # Custom password rules
-│   └── 📄 CustomUserValidator.cs          # Custom username rules
-├── 📂 Filters/
-│   └── 📄 ValidationFilterAttribute.cs    # Singleton Logic & Model Validation
-├── 📂 Messages/
-│   └── 📄 NotificationMessages.cs         # Static class for global system messages
-└── 📂 Exceptions/
-    └── 📄 ClientSideException.cs
-
+                  Plumbing.MVC
+                 Presentation Layer
+                         |
+                         v
+                  ServieceLayer
+                  Business Logic
+                         |
+                         v
+                  RepositoryLayer
+                  Data Access Layer
+                         |
+                         v
+                   EntityLayer
+                  Domain Models
+                         |
+                         v
+                    CoreLayer
+                Shared Abstractions
 ```
 
+### 1. CoreLayer
 
-5. **Presentation Layer (MVC) 🌐**
-The entry point. Contains Controllers, Razor Views, and Middleware configuration.
+Contains shared abstractions and base entity contracts.
+
+- BaseEntity.
+- IBaseEntity.
+- Shared properties and contracts.
+- RowVersion concurrency property.
+
+### 2. EntityLayer
+
+Contains the application's data models and ViewModels.
+
+- Website entities.
+- Identity entities.
+- Application ViewModels.
+- Authentication ViewModels.
+- Upload models.
+- Enumerations.
+
+### 3. RepositoryLayer
+
+Responsible for database access and persistence.
+
+- AppDbContext.
+- Entity Framework Core.
+- SQL Server integration.
+- Entity configurations.
+- Database migrations.
+- Generic Repository Pattern.
+- Unit of Work Pattern.
+
+### 4. ServieceLayer
+
+Contains business logic and application services.
+
+- Authentication services.
+- Website management services.
+- AutoMapper profiles.
+- FluentValidation validators.
+- Custom Identity validators.
+- Authorization requirements.
+- Middleware.
+- Image and email helpers.
+- Custom MVC filters.
+- Application extensions.
+
+### 5. Plumbing.MVC
+
+The presentation layer and application entry point.
+
+- MVC Controllers.
+- Razor Views.
+- Admin Area.
+- User Area.
+- View Components.
+- Authentication pages.
+- Static assets.
+- Dependency injection configuration.
+- Application middleware pipeline.
 
 ---
 
-## 🛡️ Security & Concurrency
+## 🛠️ Technology Stack
 
-This project implements enterprise-grade security patterns, enforcing **Least Privilege** and protecting against data conflicts.
-
-### 🔐 1. Dynamic "AdminObserver" Assignment
-
-Unlike simple systems where roles are hardcoded in `Program.cs`, **Plumbers911** utilizes a dynamic assignment system via the **User List Dashboard**.
-
-* **The "Extend" Button:** A SuperAdmin can view the User List and click the **"Extend"** button next to a standard user.
-* **Behind the Scenes:** This action dynamically injects the `AdminObserver` claim/role into the user's security stamp in the database.
-* **Immediate Effect:** The user immediately gains access to the Dashboard without requiring a server restart or code deployment.
-
-### 🚫 2. Granular Permissions & Restrictions
-
-The `AdminObserver` policy is strictly limited to prevent abuse and data loss. It enforces a hierarchy of power:
-
-* **✅ Can:** View the Dashboard, Edit Content (Services, Portfolio, etc.), and Update Texts.
-* **❌ Cannot Delete:** The `AdminObserver` **cannot delete** any entity (Services, Team Members, etc.). The delete button is programmatically disabled/protected.
-* **❌ Cannot Grant Roles:** The `AdminObserver` **cannot** see or use the "Extend" button. They cannot promote themselves or others to SuperAdmin.
-
-### ⚔️ 3. Concurrency Control (`RowVersion`)
-
-To prevent the "Lost Update" problem where two admins edit the same record simultaneously:
-
-* **Implementation:** Every table inherits from `BaseEntity` which includes a `RowVersion` (timestamp).
-* **Conflict Handling:** If User A saves a record that User B has already modified, the system detects the `RowVersion` mismatch.
-* **Result:** The save is aborted, and a **Toast Notification** warns the user to refresh the data, preventing accidental overwrites.
-
-### 🕵️ 4. Security Stamp Middleware
-
-A custom **Security Middleware** validates every HTTP request.
-
-* **Function:** It checks the user's **Security Stamp** against the database on every request.
-* **Impact:** If a SuperAdmin revokes a user's role or bans them, their existing cookie is **immediately invalidated**, forcing a logout on their very next click.
-
----
-
-## 🛠️ Technologies & Tools
-
-* **🚀 Framework:** ASP.NET Core 8.0 (MVC)
-* **💾 ORM:** Entity Framework Core (SQL Server)
-* **📝 Logging:** NLog
-* **✅ Validation:** FluentValidation
-* **🔄 Mapping:** AutoMapper
-* **🛡️ Security:** ASP.NET Core Identity
-* **🎨 UI:** Bootstrap 5 & jQuery
+| Technology | Purpose |
+|---|---|
+| C# | Backend development |
+| .NET 8 | Application framework |
+| ASP.NET Core MVC | Web application framework |
+| Razor Views | Server-side rendering |
+| Entity Framework Core 8 | ORM |
+| SQL Server | Relational database |
+| ASP.NET Core Identity | Authentication and user management |
+| AutoMapper | Object mapping |
+| FluentValidation | Input validation |
+| NLog | Application logging |
+| NToastNotify | User notifications |
+| Scrutor | Dependency injection registration |
+| Bootstrap | Frontend styling |
+| jQuery | Frontend interactions |
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-├── CoreLayer                    # 🧩 Base Interfaces & Common Contracts
-├── EntityLayer                  # 📦 Database Entities & ViewModels (DTOs)
-├── RepositoryLayer              # 🗄️ DbContext, Migrations & Generic Repositories
-├── ServiceLayer                 # ⚙️ Business Logic, Validation Rules & Mapping Profiles
-└── Plumbing.MVC                 # 🌐 Controllers, Views, NLog.config & wwwroot
-
+Plumbing-System/
+│
+├── CoreLayer/
+│   └── BaseEntities/
+│       ├── BaseEntity.cs
+│       └── IBaseEntity.cs
+│
+├── EntityLayer/
+│   ├── Identity/
+│   │   ├── Entites/
+│   │   └── ViewModels/
+│   │
+│   ├── WebApplication/
+│   │   ├── Entites/
+│   │   └── ViewModels/
+│   │
+│   ├── Enumerates/
+│   └── Models/
+│
+├── RepositoryLayer/
+│   ├── Configurations/
+│   ├── Context/
+│   ├── Extensions/
+│   ├── Migrations/
+│   ├── Repositories/
+│   │   ├── Abstract/
+│   │   └── Concrete/
+│   └── UnitOfWorks/
+│       ├── Abstract/
+│       └── Concrete/
+│
+├── ServieceLayer/
+│   ├── AutoMapper/
+│   ├── Customization/
+│   ├── Exceptions/
+│   ├── Extension/
+│   ├── Filters/
+│   ├── FluentValidation/
+│   ├── Helpers/
+│   ├── Middlewares/
+│   ├── Requirements/
+│   ├── Serviecs/
+│   └── Messages/
+│
+└── Plumbing.MVC/
+    ├── Areas/
+    │   ├── Admin/
+    │   │   ├── Controllers/
+    │   │   └── Views/
+    │   │
+    │   └── User/
+    │       ├── Controllers/
+    │       └── Views/
+    │
+    ├── Components/
+    ├── Controllers/
+    ├── Views/
+    ├── wwwroot/
+    ├── Program.cs
+    ├── appsettings.json
+    └── nlog.config
 ```
 
 ---
 
-## 📝 Logging & Validation
+## 🚀 Getting Started
 
-This project prioritizes reliability and debugging speed through a sophisticated pipeline:
+### Prerequisites
 
-* **🔍 NLog Integration:** A custom `nlog.config` captures runtime data. Errors are written to structured log files, allowing developers to trace issues in production without attaching a debugger.
-* **🛡️ FluentValidation:** Validation logic is decoupled into the Service Layer. This ensures that business rules are consistent regardless of where the data comes from (API, Web, or Console).
+Make sure the following tools are installed:
 
----
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [SQL Server](https://www.microsoft.com/en-us/sql-server)
+- [Visual Studio 2022](https://visualstudio.microsoft.com/)
+- [Entity Framework Core CLI](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
 
-## ⚙️ Getting Started
+### 1. Clone the Repository
 
-### 📋 Prerequisites
-
-* **🖥️ .NET 8.0 SDK**
-* **🗃️ SQL Server**
-* **💻 Visual Studio 2022**
-
-### 🛠️ Setup
-
-1. **Clone the repository:**
 ```bash
-git clone https://github.com/YounisSaid/Plumbing.git
-cd Plumbing
+git clone https://github.com/moastafa-eng/Plumbing-System.git
 
+cd Plumbing-System
 ```
 
+### 2. Restore Dependencies
 
-2. **Configure appsettings.json 📝:**
-Update the `ConnectionStrings` in `Plumbing.MVC/appsettings.json` to point to your local SQL Server instance.
-3. **Run Migrations 🏗️:**
+```bash
+dotnet restore
+```
+
+### 3. Configure the Database
+
+Open:
+
+```text
+Plumbing.MVC/appsettings.json
+```
+
+Update the database connection string:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=.;Database=PlumbingDB;Trusted_Connection=True;TrustServerCertificate=true;"
+  }
+}
+```
+
+Make sure your SQL Server instance is running and accessible.
+
+### 4. Configure Email Settings
+
+The application uses SMTP for password recovery emails.
+
+Configure the following settings:
+
+```json
+{
+  "EmailSettings": {
+    "Email": "your-email@example.com",
+    "Password": "YOUR_APP_PASSWORD",
+    "Host": "smtp.gmail.com",
+    "Port": 587
+  }
+}
+```
+
+Use a valid SMTP configuration and keep credentials outside source control in production environments.
+
+### 5. Apply Database Migrations
+
+Install the EF Core CLI if it is not already installed:
+
+```bash
+dotnet tool install --global dotnet-ef
+```
+
+Apply the existing migrations:
+
 ```bash
 dotnet ef database update --project RepositoryLayer --startup-project Plumbing.MVC
-
 ```
 
+This creates the database schema using the migrations included in the repository.
 
-4. **Run the Application ▶️:**
+### 6. Run the Application
+
 ```bash
 dotnet run --project Plumbing.MVC
-
 ```
 
+Open the local URL displayed in the terminal to access the application.
 
-## 📜 License
+---
 
-Distributed under the MIT License. See [LICENSE](https://www.google.com/search?q=LICENSE) for more information.
+## 🖥️ Application Areas
+
+The application uses ASP.NET Core MVC Areas to separate administrative and user functionality.
+
+| Area | Responsibility |
+|---|---|
+| Public Website | Displays dynamically managed business content |
+| Admin Area | Website content and administrative management |
+| User Area | User dashboard and profile management |
+
+### Admin Dashboard Modules
+
+- Dashboard statistics.
+- About management.
+- Homepage management.
+- Services management.
+- Categories management.
+- Portfolio management.
+- Team management.
+- Testimonials management.
+- Contact management.
+- Social media management.
+- User management.
+
+---
+
+## 🔍 Engineering Highlights
+
+The project demonstrates practical implementation of several backend development concepts:
+
+- N-Tier Architecture and Separation of Concerns.
+- Repository Pattern and Unit of Work.
+- Dependency Injection.
+- Generic Repository Abstraction.
+- Custom ASP.NET Core Identity.
+- Claims-Based Authorization.
+- Policy-Based Authorization.
+- Custom Middleware.
+- Optimistic Concurrency Control.
+- Entity Framework Core Fluent Configurations.
+- AutoMapper Profiles.
+- FluentValidation.
+- MVC Filters.
+- View Components.
+- SMTP Email Integration.
+- Centralized Logging.
+
+---
+
+## 🔮 Potential Future Improvements
+
+- Automated unit and integration testing.
+- CI/CD pipeline integration.
+- Containerized deployment using Docker.
+- Enhanced image upload validation and file-size restrictions.
+- Audit logging for administrative operations.
+- Additional reporting and analytics.
+- Improved automated database initialization and role seeding.
+
+---
+
+## 👨‍💻 Author
+
+**Mostafa Engineering**
+
+GitHub: [@moastafa-eng](https://github.com/moastafa-eng)
+
+Project Repository: [Plumbing-System](https://github.com/moastafa-eng/Plumbing-System)
+
+---
+
+<p align="center">
+  <strong>Built with ASP.NET Core 8 and a focus on maintainability, security, and clean separation of concerns.</strong>
+</p>
